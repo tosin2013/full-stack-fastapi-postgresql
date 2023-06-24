@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: CI/CD Test Pipeline
 
 on:
   push:
@@ -25,4 +25,5 @@ jobs:
       - name: Run tests
         run: sh ./scripts/test.sh
 
-  
+      - name: Run Local Tests
+        run: sh ./scripts/test-local.sh
