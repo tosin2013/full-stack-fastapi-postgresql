@@ -19,8 +19,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Install Cookie Cuttter
-        run: pip install cookiecutter httpcore
+      - name: Install pip dependencies
+        run: pip install cookiecutter httpcore tenacity
 
       - name: Run tests
         run: sh ./scripts/test.sh
