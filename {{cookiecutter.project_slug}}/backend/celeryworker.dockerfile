@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM python:3.10
 
 WORKDIR /app/
 
@@ -7,6 +7,8 @@ RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry python
     cd /usr/local/bin && \
     ln -s /opt/poetry/bin/poetry && \
     poetry config virtualenvs.create false
+
+RUN poetry self update
 
 # Copy poetry.lock* in case it doesn't exist in the repo
 COPY ./app/pyproject.toml ./app/poetry.lock* /app/

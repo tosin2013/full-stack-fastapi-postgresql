@@ -23,9 +23,6 @@ jobs:
         run: pip install cookiecutter httpcore tenacity h11
 
       - name: Run tests
-        run: python --version
-
-      - name: Run tests
         run: sh ./scripts/test.sh
 
       - name: Run Local Tests
