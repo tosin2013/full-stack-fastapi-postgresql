@@ -1,0 +1,90 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - master
+      - production
+
+env:
+  DOMAIN: ${{ secrets.DOMAIN }}
+  TRAEFIK_TAG: ${{ secrets.TRAEFIK_TAG }}
+  STACK_NAME: ${{ secrets.STACK_NAME }}
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Compose
+        uses: docker/setup-docker-compose@v1
+
+      - name: Run tests
+        run: sh ./scripts/test.sh
+
+  build-stag:
+    name: Build and Push (Staging)
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Compose
+        uses: docker/setup-docker-compose@v1
+
+      - name: Build and Push
+        run: TAG=stag FRONTEND_ENV=staging sh ./scripts/build-push.sh
+
+  build-prod:
+    name: Build and Push (Production)
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/production'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Compose
+        uses: docker/setup-docker-compose@v1
+
+      - name: Build and Push
+        run: TAG=prod FRONTEND_ENV=production sh ./scripts/build-push.sh
+
+  deploy-stag:
+    name: Deploy (Staging)
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Compose
+        uses: docker/setup-docker-compose@v1
+
+      - name: Deploy
+        run: sh ./scripts/deploy.sh
+
+    environment:
+      name: staging
+      url: https://${{ secrets.DOMAIN_STAGING }}
+
+  deploy-prod:
+    name: Deploy (Production)
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/production'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Compose
+        uses: docker/setup-docker-compose@v1
+
+      - name: Deploy
+        run: sh ./scripts/deploy.sh
+
+    environment:
+      name: production
+      url: https://${{ secrets.DOMAIN_MAIN }}
